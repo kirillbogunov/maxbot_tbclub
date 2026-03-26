@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// 🔥 проверка токена
 if (!process.env.BOT_TOKEN) {
     console.error('❌ BOT_TOKEN не найден');
     process.exit(1);
@@ -25,9 +24,9 @@ const mainKeyboard = Keyboard.inlineKeyboard([
     ]
 ]);
 
-// 🚀 Старт через command (иногда не срабатывает)
-bot.command('start', async (ctx) => {
-    console.log('👉 command /start');
+// 🔥 старт (очень важно)
+bot.on('bot_started', async (ctx) => {
+    console.log('🔥 bot_started');
 
     await ctx.reply(
         '👋 Добро пожаловать в Инженерный клуб "Технологии будущего"!\n\nВыберите раздел:',
@@ -35,85 +34,50 @@ bot.command('start', async (ctx) => {
     );
 });
 
-// 🚀 Гарантированный старт через обычное сообщение
+// 📩 сообщения
 bot.on('message_created', async (ctx) => {
     const text = ctx.message?.body?.text;
-
     console.log('📩 Сообщение:', text);
 
     if (text === '/start') {
         await ctx.reply(
-            '👋 Добро пожаловать в Инженерный клуб "Технологии будущего"!\n\nВыберите раздел:',
+            '👋 Добро пожаловать!\n\nВыберите раздел:',
             { attachments: [mainKeyboard] }
         );
     }
 });
 
-
 // 📚 О клубе
 bot.action('about', async (ctx) => {
-    await ctx.reply(
-        '🔧 Инженерный клуб "Технологии будущего"\n\n' +
-        '• программирование\n' +
-        '• 3D-моделирование\n' +
-        '• робототехника\n\n' +
-        'Развиваем навыки будущего 🚀',
-        { attachments: [mainKeyboard] }
-    );
+    await ctx.reply('📚 О клубе...', { attachments: [mainKeyboard] });
 });
 
-
-// 📅 Онлайн расписание
+// 📅 Расписание
 bot.action('schedule', async (ctx) => {
-    const scheduleKeyboard = Keyboard.inlineKeyboard([
-        [
-            Keyboard.button.link(
-                'Открыть расписание',
-                'https://inzhenernyyklubtehnologiibuduschego.s20.online/common/1/online-schedule/embed?data_pc=59CD90&data_locale=ru'
-            )
-        ],
-        [
-            Keyboard.button.callback('⬅️ Назад', 'back')
-        ]
+    const kb = Keyboard.inlineKeyboard([
+        [Keyboard.button.link('Открыть расписание', 'https://inzhenernyyklubtehnologiibuduschego.s20.online/common/1/online-schedule/embed?data_pc=59CD90&data_locale=ru')],
+        [Keyboard.button.callback('⬅️ Назад', 'back')]
     ]);
 
-    await ctx.reply('📅 Онлайн расписание:', {
-        attachments: [scheduleKeyboard]
-    });
+    await ctx.reply('📅 Онлайн расписание:', { attachments: [kb] });
 });
-
 
 // 💰 Цены
 bot.action('prices', async (ctx) => {
-    await ctx.reply(
-        '💰 Стоимость занятий:\n\n' +
-        '• Пробное занятие — бесплатно\n' +
-        '• Абонементы — уточняйте у администратора',
-        { attachments: [mainKeyboard] }
-    );
+    await ctx.reply('💰 Цены...', { attachments: [mainKeyboard] });
 });
-
 
 // 📞 Контакты
 bot.action('contacts', async (ctx) => {
-    await ctx.reply(
-        '📞 Контакты:\n\n' +
-        'Телефон: +7 XXX XXX-XX-XX\n' +
-        'Адрес: ваш адрес',
-        { attachments: [mainKeyboard] }
-    );
+    await ctx.reply('📞 Контакты...', { attachments: [mainKeyboard] });
 });
-
 
 // ⬅️ Назад
 bot.action('back', async (ctx) => {
-    await ctx.reply('Выберите раздел:', {
-        attachments: [mainKeyboard]
-    });
+    await ctx.reply('Назад в меню', { attachments: [mainKeyboard] });
 });
 
+// ❗ ВАЖНО — запуск Long Polling
+bot.startPolling();
 
-// 🚀 запуск
-bot.start();
-
-console.log('🚀 Бот запущен');
+console.log('🚀 Бот запущен (Long Polling)');
